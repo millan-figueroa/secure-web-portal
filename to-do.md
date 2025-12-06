@@ -1,36 +1,34 @@
 # Secure Web Portal – To-Do List
 
----
-
 ### Task 1 — Project Setup
 
-- [ ] Create project folder and run `npm init -y`
-- [ ] Install dependencies: `express`, `mongoose`, `bcrypt`, `jsonwebtoken`, `dotenv`, `passport`, `passport-github2`
-- [ ] (Optional) Install dev dependency: `nodemon`
-- [ ] Create `.env` file with:
-  - [ ] `MONGO_URI`
-  - [ ] `PORT`
-  - [ ] `JWT_SECRET`
-  - [ ] `GITHUB_CLIENT_ID`
-  - [ ] `GITHUB_CLIENT_SECRET`
-  - [ ] `GITHUB_CALLBACK_URL`
-- [ ] Create `.gitignore` (ignore `node_modules`, `.env`)
-- [ ] Create project structure:
-  - [ ] `server.js` (or `app.js`)
-  - [ ] `config/` (db + passport config)
-  - [ ] `models/` (User, Bookmark)
-  - [ ] `routes/` (users, bookmarks)
-  - [ ] `utils/` (auth helpers)
+- [x] Create project folder and run `npm init -y`
+- [x] Install dependencies: `express`, `mongoose`, `bcrypt`, `jsonwebtoken`, `dotenv`, `passport`, `passport-github2`
+- [x] (Optional) Install dev dependency: `nodemon`
+- [x] Create `.env` file with:
+  - [x] `MONGO_URI`
+  - [x] `PORT`
+  - [x] `JWT_SECRET`
+  - [x] `GITHUB_CLIENT_ID`
+  - [x] `GITHUB_CLIENT_SECRET`
+  - [x] `GITHUB_CALLBACK_URL`
+- [x] Create `.gitignore` (ignore `node_modules`, `.env`)
+- [x] Create project structure:
+  - [x] `server.js` (or `app.js`)
+  - [x] `config/` (db + passport config)
+  - [x] `models/` (User, Bookmark)
+  - [x] `routes/` (users, bookmarks)
+  - [x] `utils/` (auth helpers)
 
 ---
 
 ### Task 2 — Models & Configuration
 
-- [ ] Set up MongoDB connection in `config/db.js` and import it in `server.js`
-- [ ] Create `models/User.js` with:
-  - [ ] `email` (unique, required)
-  - [ ] `password` (optional)
-  - [ ] `githubId` (optional)
+- [x] Set up MongoDB connection in `config/db.js` and import it in `server.js`
+- [x] Create `models/User.js` with:
+  - [x] `email` (unique, required)
+  - [x] `password` (optional)
+  - [x] `githubId` (optional)
 - [ ] Create `models/Bookmark.js` with:
   - [ ] `title`
   - [ ] `url` or `content`
