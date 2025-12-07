@@ -43,58 +43,65 @@
 ### Task 3 — Local Authentication API
 
 - [ ] Create `routes/users.js`
+- [ ] Set up `/api/users` base path in server.js
+- [ ] Create `utils/auth.js`
+  - [ ] Reuse JWT logic from earlier labs
+  - [ ] Function to sign a token for a user
+  - [ ] Auth middleware to verify token and put user on `req.user`
 - [ ] Implement `POST /api/users/register`:
-  - [ ] Check if user with email exists
+  - [ ] Check if user exists by email
   - [ ] Hash password with `bcrypt`
   - [ ] Save user and respond
 - [ ] Implement `POST /api/users/login`:
   - [ ] Find user by email
   - [ ] Compare password with `bcrypt.compare`
   - [ ] On success, sign JWT and return it
-- [ ] Create `utils/auth.js`:
-  - [ ] Helper to sign JWT
-  - [ ] `authMiddleware` to verify token and set `req.user`
+- [ ] Ensure hashed passwords never return to client
+- [ ] Reuse local auth code from previous labs (DRY)
 
 ---
 
 ### Task 4 — GitHub OAuth
 
-- [ ] Initialize passport in `server.js`:
+- [ ] Initialize Passport in `server.js`:
   - [ ] `app.use(passport.initialize())`
   - [ ] Require `config/passport`
-- [ ] In `routes/users.js`, add:
-  - [ ] `GET /api/users/auth/github` → `passport.authenticate('github', ...)`
+- [ ] Create and configure passport strategy in `config/passport.js`:
+  - [ ] Load credentials from `.env`
+  - [ ] Verify callback: find or create a user by email or githubId
+- [ ] Add GitHub routes in `routes/users.js`:
+  - [ ] `GET /api/users/auth/github` → `passport.authenticate('github')`
   - [ ] `GET /api/users/auth/github/callback`:
     - [ ] Use `passport.authenticate('github', { session: false })`
-    - [ ] On success, sign JWT for the user
-    - [ ] Return token (JSON or redirect with token in query string)
+    - [ ] If successful, sign JWT and return it (JSON or redirect)
+- [ ] Test OAuth manually to confirm it returns a valid JWT
 
 ---
 
 ### Task 5 — Secure Bookmarks API
 
 - [ ] Create `routes/bookmarks.js`
-- [ ] Protect all routes with `authMiddleware`
+- [ ] Protect all bookmark routes with `authMiddleware`
 - [ ] Implement:
   - [ ] `POST /api/bookmarks` — create bookmark with `user: req.user.id`
-  - [ ] `GET /api/bookmarks` — return bookmarks where `user === req.user.id`
-  - [ ] `GET /api/bookmarks/:id` — return only if `bookmark.user === req.user.id`
-  - [ ] `PUT /api/bookmarks/:id` — update only if owner
-  - [ ] `DELETE /api/bookmarks/:id` — delete only if owner
-- [ ] Mount routes in `server.js`:
+  - [ ] `GET /api/bookmarks` — fetch bookmarks for user making request
+  - [ ] `GET /api/bookmarks/:id` — return only if owned by `req.user.id`
+  - [ ] `PUT /api/bookmarks/:id` — update only if owned by user
+  - [ ] `DELETE /api/bookmarks/:id` — delete only if owned by user
+- [ ] Mount in `server.js`:
   - [ ] `app.use('/api/users', userRoutes)`
   - [ ] `app.use('/api/bookmarks', bookmarkRoutes)`
+- [ ] Add authorization logic to confirm ownership before update/delete
 
 ---
 
 ### Task 6 — Testing & Cleanup
 
-- [ ] Test registration with Postman/Insomnia
-- [ ] Test local login and copy JWT
-- [ ] Use JWT in `Authorization: Bearer <token>` header for bookmarks routes
+- [ ] Test register with Postman
+- [ ] Test login and copy JWT
+- [ ] Use JWT in `Authorization: Bearer <token>` header
+- [ ] Create bookmarks as logged-in user
+- [ ] Attempt bookmark access by another user (should fail)
 - [ ] Test GitHub login flow and confirm JWT is returned
-- [ ] Create two users and confirm:
-  - [ ] Each can only see their own bookmarks
-  - [ ] Cannot read/update/delete another user’s bookmarks
-- [ ] Clean up console logs and error handling
-- [ ] Commit and push to GitHub (verify `.env` is not tracked)
+- [ ] Confirm `.env` is not committed to GitHub
+- [ ] Clean up console logs and extra comments

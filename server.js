@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const passport = require("passport");
 
 // Set up all variables in the .env file
 require("dotenv").config();
@@ -11,10 +12,10 @@ mongoose
   .then(() => console.log("Successfully connected to MongoDB!"))
   .catch((err) => console.error("Connection error", err));
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3001;
 const app = express();
 
-// ========= Middlewares =================
+// ========= Middleware =================
 app.use(morgan("dev")); // logger
 app.use(express.json()); // body parser
 require("./config/passport");
