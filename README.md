@@ -2,8 +2,7 @@
 
 A secure backend service for **Innovate**, built with **Express**, providing user authentication (email/password + GitHub OAuth) and private bookmark management.  
 This project implements secure user identity management, JWT-based session handling, GitHub OAuth integration, and protected CRUD operations for user-owned resources.
-
----
+<br><br>
 
 ## 🚀 Overview
 
@@ -20,8 +19,7 @@ The Secure Web Portal is a single-entry backend for managing:
   - Authorization ensures users cannot access others’ data
 
 The project follows a **modular, DRY architecture**, reusing utilities and patterns from previous labs.
-
----
+<br><br>
 
 ## 🧰 Tech Stack
 
@@ -32,8 +30,7 @@ The project follows a **modular, DRY architecture**, reusing utilities and patte
 - **dotenv** → environment management
 - **passport** + **passport-github2** → GitHub OAuth
 - **Modular Project Structure** (config, models, routes, utils)
-
----
+  <br><br>
 
 ## 📁 Project Structure (Suggested)
 
@@ -62,8 +59,7 @@ SECURE-WEB-PORTAL/<br>
 ├── package-lock.json<br>
 ├── README.md<br>
 └── server.js
-
----
+<br><br>
 
 ## 🔧 Installation
 
@@ -105,6 +101,8 @@ Server will run at:
 npm start
 ```
 
+<br><br>
+
 ## 🔐 Authentication Endpoints
 
 ### Local Authentication
@@ -114,7 +112,7 @@ npm start
 | POST   | /api/users/register | Creates a new user account with email and password |
 | POST   | /api/users/login    | Authenticates user and returns a signed JWT        |
 
----
+<br><br>
 
 ## 🌐 GitHub OAuth Authentication
 
@@ -129,7 +127,7 @@ npm start
 - If new → create user, then return JWT
 - Typically sent back to frontend via redirect with `?token=<jwt>`
 
----
+<br><br>
 
 ## 📘 Protected Bookmark API
 
@@ -148,7 +146,7 @@ All bookmark routes require:
 | PUT    | /api/bookmarks/:id | Update a bookmark (owner only)                 |
 | DELETE | /api/bookmarks/:id | Delete a bookmark (owner only)                 |
 
----
+<br><br>
 
 ## 🛡️ Security Features
 
@@ -158,5 +156,3 @@ All bookmark routes require:
 - Ownership checks prevent users from accessing others' bookmarks
 - Environment variables stored securely in `.env`
 - `.gitignore` prevents sensitive files from being committed
-
----

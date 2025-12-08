@@ -76,7 +76,7 @@ async function registerUser(req, res) {
 }
 
 /**
- * login user
+ * login User
  */
 async function loginUser(req, res) {
   try {
