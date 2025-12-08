@@ -27,7 +27,11 @@
   - [x] `email` (String, unique, required)
   - [x] `password` (String, optional for local auth)
   - [x] `githubId` (String, optional for GitHub auth)
-  - [ ] Field for private resources (e.g. `bookmarks: [ { title, url, createdAt } ]`)
+- [ ] Create `models/Bookmark.js`:
+  - [ ] `title` (String, required)
+  - [ ] `url` (String, required)
+  - [ ] `user` (ObjectId, ref: 'User', required)
+  - [ ] optional timestamps
 - [ ] Configure Passport GitHub strategy in `config/passport.js`:
   - [ ] Load `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_CALLBACK_URL` from `process.env`
   - [ ] Define GitHub strategy using `passport-github2`
