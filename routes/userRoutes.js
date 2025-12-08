@@ -1,0 +1,30 @@
+const express = require("express");
+const {
+  registerUser,
+  loginUser,
+  getMe,
+} = require("../controllers/userController");
+
+const { authMiddleware } = require("../middleware/auth");
+
+// router
+const router = express.Router();
+
+/**
+ * post /api/users/register
+ */
+router.post("/register", registerUser);
+
+/**
+ * post /api/users/login
+ */
+router.post("/login", loginUser);
+
+/**
+ * get /api/users/me
+ * protected route
+ */
+router.get("/me", authMiddleware, getMe);
+
+// disable github routes for now while testing local auth
+module.exports = router;
