@@ -17,26 +17,22 @@ passport.use(
         // The "profile" object contains the user's GitHub information
         const existingUser = await User.findOne({ githubId: profile.id });
 
-        if (existingUser) {
-          // If user already exists, pass them to the next middleware
-          return done(null, existingUser);
+        if (!user) {
+          // if no user found, create a new user
+          newUser = new User({
+            githubId: profile.id,
+            username: profile.username,
+            email: profile.emails ? profile.emails[0].value : "test@mail.com",
+            // Some providers return an array of emails
+            password: Math.random().toString(36).slice(-8),
+          });
+
+          console.log(newUser);
+          await newUser.save();
+          return done(null, newUser);
         }
-
-        // If it's a new user, create a record in our database
-        const newUser = new User({
-          githubId: profile.id,
-          username: profile.username,
-          email: profile.emails ? profile.emails[0].value : "test@mail.com",
-          // Some providers return an array of emails
-          password: Math.random().toString(36).slice(-8),
-        });
-
-        console.log(newUser);
-
-        await newUser.save();
-        done(null, newUser);
       } catch (err) {
-        done(err);
+        return done(err);
       }
     }
   )
@@ -50,3 +46,5 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((id, done) => {
   User.findById(id, (err, user) => done(err, user));
 });
+
+module.exports = passport;
