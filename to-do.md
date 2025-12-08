@@ -13,95 +13,105 @@
   - [x] `GITHUB_CLIENT_SECRET`
   - [x] `GITHUB_CALLBACK_URL`
 - [x] Create `.gitignore` (ignore `node_modules`, `.env`)
-- [x] Create project structure:
-  - [x] `server.js` (or `app.js`)
-  - [x] `config/` (db + passport config)
-  - [x] `models/` (User, Bookmark)
-  - [x] `routes/` (users, bookmarks)
-  - [x] `utils/` (auth helpers)
+- [x] Open `server.js` and verify:
+  - [x] Express app is created
+  - [x] JSON body parsing is enabled (`app.use(express.json())`)
+  - [x] MongoDB connection is imported / used
+  - [x] `userRoutes` is mounted at `/api/users`
 
 ---
 
 ### Task 2 — Models & Configuration
 
-- [x] Set up MongoDB connection in `config/db.js` and import it in `server.js`
-- [x] Create `models/User.js` with:
-  - [x] `email` (unique, required)
-  - [x] `password` (optional)
-  - [x] `githubId` (optional)
-- [ ] Create `models/Bookmark.js` with:
-  - [ ] `title`
-  - [ ] `url` or `content`
-  - [ ] `user: { type: Schema.Types.ObjectId, ref: 'User' }`
-- [ ] Create `config/passport.js`:
-  - [ ] Configure GitHub strategy with env vars
-  - [ ] Verify callback: find or create user
-  - [ ] Export passport config function
+- [x] Update `models/User.js` to support both local and GitHub auth:
+  - [x] `email` (String, unique, required)
+  - [x] `password` (String, optional for local auth)
+  - [x] `githubId` (String, optional for GitHub auth)
+  - [ ] Field for private resources (e.g. `bookmarks: [ { title, url, createdAt } ]`)
+- [ ] Configure Passport GitHub strategy in `config/passport.js`:
+  - [ ] Load `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_CALLBACK_URL` from `process.env`
+  - [ ] Define GitHub strategy using `passport-github2`
+  - [ ] Implement verify callback:
+    - [ ] Find user by `githubId` or email
+    - [ ] If not found, create a new user
+  - [ ] Export the configured `passport` instance
+- [ ] Ensure `server.js` imports `config/passport.js` and calls:
+  - [ ] `app.use(passport.initialize())`
 
 ---
 
 ### Task 3 — Local Authentication API
 
-- [ ] Create `routes/users.js`
-- [ ] Set up `/api/users` base path in server.js
-- [ ] Create `utils/auth.js`
-  - [ ] Reuse JWT logic from earlier labs
-  - [ ] Function to sign a token for a user
-  - [ ] Auth middleware to verify token and put user on `req.user`
-- [ ] Implement `POST /api/users/register`:
-  - [ ] Check if user exists by email
-  - [ ] Hash password with `bcrypt`
-  - [ ] Save user and respond
-- [ ] Implement `POST /api/users/login`:
-  - [ ] Find user by email
-  - [ ] Compare password with `bcrypt.compare`
-  - [ ] On success, sign JWT and return it
-- [ ] Ensure hashed passwords never return to client
-- [ ] Reuse local auth code from previous labs (DRY)
+- [x] Open `middleware/auth.js` (or create if empty) and:
+  - [x] Implement JWT `auth` middleware:
+    - [x] Read token from `Authorization: Bearer <token>`
+    - [x] Verify with `JWT_SECRET`
+    - [x] Attach user data to `req.user`
+- [x] In `controllers/userController.js`, implement:
+  - [x] `registerUser`:
+    - [x] Check if user with email exists
+    - [x] Hash password with `bcrypt` (via pre-save hook)
+    - [x] Create and save new user
+    - [x] Return safe user data or token (no plain password)
+  - [x] `loginUser`:
+    - [x] Find user by email
+    - [x] Compare password with `bcrypt.compare` / `isCorrectPassword`
+    - [x] On success, sign JWT and return it
+- [x] In `userController.js` or a helper, add:
+  - [x] Functionality to sign JWT for a user (using `jsonwebtoken`)
+- [x] In `routes/userRoutes.js`, wire routes to controllers:
+  - [x] `POST /api/users/register` → `registerUser`
+  - [x] `POST /api/users/login` → `loginUser`
+  - [x] `GET /api/users/me` → protected with `authMiddleware`
+- [x] Make sure hashed passwords never get returned in responses
 
 ---
 
 ### Task 4 — GitHub OAuth
 
-- [ ] Initialize Passport in `server.js`:
-  - [ ] `app.use(passport.initialize())`
-  - [ ] Require `config/passport`
-- [ ] Create and configure passport strategy in `config/passport.js`:
-  - [ ] Load credentials from `.env`
-  - [ ] Verify callback: find or create a user by email or githubId
-- [ ] Add GitHub routes in `routes/users.js`:
-  - [ ] `GET /api/users/auth/github` → `passport.authenticate('github')`
+- [ ] In `routes/userRoutes.js`, add GitHub OAuth routes:
+  - [ ] `GET /api/users/auth/github`:
+    - [ ] Calls `passport.authenticate('github', { scope: ['user:email'] })`
   - [ ] `GET /api/users/auth/github/callback`:
-    - [ ] Use `passport.authenticate('github', { session: false })`
-    - [ ] If successful, sign JWT and return it (JSON or redirect)
-- [ ] Test OAuth manually to confirm it returns a valid JWT
+    - [ ] Uses `passport.authenticate('github', { session: false })`
+    - [ ] On success, signs a JWT for `req.user`
+    - [ ] Returns token (JSON or redirect with `?token=...`)
+- [ ] Confirm `config/passport.js` and `server.js` are wired so Passport works
+- [ ] Test the full GitHub flow and confirm you get a valid JWT
 
 ---
 
-### Task 5 — Secure Bookmarks API
+### Task 5 — Secure “Bookmarks” API (inside User)
 
-- [ ] Create `routes/bookmarks.js`
-- [ ] Protect all bookmark routes with `authMiddleware`
-- [ ] Implement:
-  - [ ] `POST /api/bookmarks` — create bookmark with `user: req.user.id`
-  - [ ] `GET /api/bookmarks` — fetch bookmarks for user making request
-  - [ ] `GET /api/bookmarks/:id` — return only if owned by `req.user.id`
-  - [ ] `PUT /api/bookmarks/:id` — update only if owned by user
-  - [ ] `DELETE /api/bookmarks/:id` — delete only if owned by user
-- [ ] Mount in `server.js`:
-  - [ ] `app.use('/api/users', userRoutes)`
-  - [ ] `app.use('/api/bookmarks', bookmarkRoutes)`
-- [ ] Add authorization logic to confirm ownership before update/delete
+- [ ] In `models/User.js`, confirm the user has a bookmarks (or similar) field, e.g.:
+  - [ ] `bookmarks: [ { title: String, url: String, createdAt: Date } ]`
+- [ ] In `controllers/userController.js`, add bookmark handlers that work off `req.user`:
+  - [ ] `createBookmark` — push a new bookmark into the logged-in user’s `bookmarks` array and save
+  - [ ] `getBookmarks` — return only `req.user`’s bookmarks
+  - [ ] `getBookmarkById` — return a single bookmark by its id/index from the logged-in user
+  - [ ] `updateBookmark` — update a specific bookmark for that user
+  - [ ] `deleteBookmark` — remove a specific bookmark for that user
+- [ ] In `routes/userRoutes.js`, add routes protected by `auth` middleware, for example:
+  - [ ] `POST /api/users/bookmarks` → `auth` → `createBookmark`
+  - [ ] `GET /api/users/bookmarks` → `auth` → `getBookmarks`
+  - [ ] `GET /api/users/bookmarks/:id` → `auth` → `getBookmarkById`
+  - [ ] `PUT /api/users/bookmarks/:id` → `auth` → `updateBookmark`
+  - [ ] `DELETE /api/users/bookmarks/:id` → `auth` → `deleteBookmark`
+- [ ] Ensure authorization:
+  - [ ] Bookmarks are always filtered by the logged-in user (no access to others)
+  - [ ] All bookmark routes require a valid JWT
 
 ---
 
 ### Task 6 — Testing & Cleanup
 
-- [ ] Test register with Postman
-- [ ] Test login and copy JWT
-- [ ] Use JWT in `Authorization: Bearer <token>` header
-- [ ] Create bookmarks as logged-in user
-- [ ] Attempt bookmark access by another user (should fail)
-- [ ] Test GitHub login flow and confirm JWT is returned
-- [ ] Confirm `.env` is not committed to GitHub
-- [ ] Clean up console logs and extra comments
+- [x] Test `POST /api/users/register` in Postman
+- [x] Test `POST /api/users/login` and copy the JWT from the response
+- [ ] Use JWT in `Authorization: Bearer <token>` for bookmark routes
+- [ ] Verify:
+  - [ ] You can create and read your own bookmarks
+  - [ ] Another user cannot access or modify your bookmarks
+- [ ] Test GitHub OAuth and confirm it returns a usable JWT
+- [x] Confirm `.env` is not tracked in Git
+- [ ] Remove extra console logs and commented-out code
+- [ ] Commit and push your final version
